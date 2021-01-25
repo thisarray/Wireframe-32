@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+
+<html lang="en-US">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>kungfu</title>
+  <script src="../../jsgame0.js"></script>
+  <style type="text/css" media="screen">
+body {
+  background-color: white;
+  color: black;
+}
+.hidden {
+  display: none;
+}
+#original {
+  margin-left: 1em;
+}
+  </style>
+</head>
+
+<body>
+<section id="imageLoader" class="hidden">
+  <img class="hidden" src="images/background.png" alt="background">
+  <img class="hidden" src="images/dudefalll.png" alt="dudefalll">
+  <img class="hidden" src="images/dudefallr.png" alt="dudefallr">
+  <img class="hidden" src="images/dudel_0001.png" alt="dudel_0001">
+  <img class="hidden" src="images/dudel_0002.png" alt="dudel_0002">
+  <img class="hidden" src="images/dudel_0003.png" alt="dudel_0003">
+  <img class="hidden" src="images/dudel_0004.png" alt="dudel_0004">
+  <img class="hidden" src="images/dudel_0005.png" alt="dudel_0005">
+  <img class="hidden" src="images/dudel_0006.png" alt="dudel_0006">
+  <img class="hidden" src="images/duder_0001.png" alt="duder_0001">
+  <img class="hidden" src="images/duder_0002.png" alt="duder_0002">
+  <img class="hidden" src="images/duder_0003.png" alt="duder_0003">
+  <img class="hidden" src="images/duder_0004.png" alt="duder_0004">
+  <img class="hidden" src="images/duder_0005.png" alt="duder_0005">
+  <img class="hidden" src="images/duder_0006.png" alt="duder_0006">
+  <img class="hidden" src="images/kickl.png" alt="kickl">
+  <img class="hidden" src="images/kickr.png" alt="kickr">
+  <img class="hidden" src="images/punchl.png" alt="punchl">
+  <img class="hidden" src="images/punchr.png" alt="punchr">
+  <img class="hidden" src="images/standl.png" alt="standl">
+  <img class="hidden" src="images/standr.png" alt="standr">
+  <img class="hidden" src="images/walkl_0001.png" alt="walkl_0001">
+  <img class="hidden" src="images/walkl_0002.png" alt="walkl_0002">
+  <img class="hidden" src="images/walkl_0003.png" alt="walkl_0003">
+  <img class="hidden" src="images/walkl_0004.png" alt="walkl_0004">
+  <img class="hidden" src="images/walkl_0005.png" alt="walkl_0005">
+  <img class="hidden" src="images/walkl_0006.png" alt="walkl_0006">
+  <img class="hidden" src="images/walkr_0001.png" alt="walkr_0001">
+  <img class="hidden" src="images/walkr_0002.png" alt="walkr_0002">
+  <img class="hidden" src="images/walkr_0003.png" alt="walkr_0003">
+  <img class="hidden" src="images/walkr_0004.png" alt="walkr_0004">
+  <img class="hidden" src="images/walkr_0005.png" alt="walkr_0005">
+  <img class="hidden" src="images/walkr_0006.png" alt="walkr_0006">
+</section>
+
+<main>
+<h1>kungfu</h1>
+
+<canvas id="screen">
+The game screen appears here if your browser supports the Canvas API.
+</canvas>
+<section id="controls">
+  <button type="button" id="reset">Reset</button>
+  <button type="button" id="pause">Pause</button>
+</section>
+
+<h2>Attribution</h2>
+
+<p><a href="https://wireframe.raspberrypi.org/issues/32">Source Code: code a Kung-Fu Master-style beat-'em-up, pages 40-41, by Mark Vanstone</a>.</p>
+
+<p>Licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/legalcode">Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported</a>.</p>
+
+<h2>Original Python code</h2>
+
+<pre id="original"><code>
+# Kung Fu Master
+import random
+
+HEIGHT = 450
+gameState = count = 0
+bloke = Actor(&#x27;walkl_0001&#x27;, center=(400, 250))
+blokeDir = &quot;l&quot;
+backPos = -500
+dudes = []
+action = &quot;&quot;
+actioncount = 0
+
+def draw():
+    screen.fill((0,0,0))
+    screen.blit(&quot;background&quot;, (backPos, 30))
+    screen.draw.text(&quot;Pygame Zero Kung Fu Master&quot;, center = (400, 15), owidth=1, ocolor=(255,0,0), color=(255,255,0) , fontsize=30)
+    if gameState != 1 or (gameState == 1 and count%2 == 0):bloke.draw()
+    for d in dudes:
+        d.draw()
+
+def on_key_down(key):
+    global action, actioncount
+    actioncount = 10
+    if gameState == 0:
+        if key.name == &quot;A&quot;: action = &quot;punch&quot;
+        if key.name == &quot;Q&quot;: action = &quot;kick&quot;
+
+def update():
+    global count, backPos, blokeDir, action, actioncount
+    if gameState == 0:
+        bloke.image = &#x27;stand&#x27; + blokeDir
+        if action == &quot;punch&quot;: bloke.image = &#x27;punch&#x27;+blokeDir
+        if action == &quot;kick&quot;: bloke.image = &#x27;kick&#x27;+blokeDir
+        if actioncount &lt;= 0: action = &quot;&quot;
+        if keyboard.left: moveBloke(3,&quot;l&quot;)
+        elif keyboard.right: moveBloke(-3,&quot;r&quot;)
+        if random.randint(0, 100) == 0: makeDude()
+        updateDudes()
+    count += 1
+    actioncount -= 1
+
+def moveBloke(x,d):
+    global backPos, blokeDir
+    frame = int((count%48)/8) + 1
+    if backPos + x &lt; -3 and backPos + x &gt; -1197:
+        backPos += x
+        moveDudes(x)
+        bloke.image = &#x27;walk&#x27;+d+&#x27;_000&#x27;+str(frame)
+        blokeDir = d
+
+def makeDude():
+    d = len(dudes)
+    if random.randint(0, 1) == 0:
+        dudes.append(Actor(&#x27;duder_0001&#x27;, center=(-50,250)))
+    else:
+        dudes.append(Actor(&#x27;dudel_0001&#x27;, center=(850, 250)))
+    dudes[d].status = 0
+
+def updateDudes():
+    global gameState
+    frame = int((count%48)/8) + 1
+    for d in dudes:
+        if (bloke.image == &#x27;punch&#x27;+blokeDir or bloke.image == &#x27;kick&#x27;+blokeDir) and bloke.collidepoint((d.x, d.y)):
+            d.status += 1
+        if d.x &lt;=400:
+            if d.status &gt; 10:
+                d.image = &#x27;dudefallr&#x27;
+                d.y += 5
+            else:
+                d.x += 2
+                d.image = &#x27;duder_000&#x27;+str(frame)
+        if d.x &gt;400:
+            if d.status &gt; 10:
+                d.image = &#x27;dudefalll&#x27;
+                d.y += 5
+            else:
+                d.x -= 2
+                d.image = &#x27;dudel_000&#x27;+str(frame)
+        if d.x &gt; 398 and d.x &lt; 402 and d.status == 0: gameState = 1
+
+def moveDudes(x):
+    for d in dudes:
+        d.x += x
+</code></pre>
+</main>
+
+<script>
+// Kung Fu Master
+HEIGHT = 450;
+
+var gameState, count, bloke, blokeDir, backPos, dudes, action, actioncount;
+
+function reset() {
+  gameState = 0;
+  count = 0;
+  bloke = new Actor('walkl_0001');
+  bloke.center = [400, 250];
+  blokeDir = "l";
+  backPos = -500;
+  dudes = [];
+  action = "";
+  actioncount = 0;
+}
+
+function draw() {
+  screen.fill([0, 0, 0]);
+  screen.blit("background", [backPos, 30]);
+  screen.draw.text("Pygame Zero Kung Fu Master", {
+    center: [400, 15],
+    owidth: 1,
+    ocolor: [255, 0, 0],
+    color: [255, 255, 0],
+    fontsize: 30
+  });
+  if ((gameState !== 1) || ((gameState === 1) && ((count % 2) === 0))) {
+    bloke.draw();
+  }
+  for (let d of dudes) {
+    d.draw();
+  }
+}
+
+function on_key_down(key) {
+  actioncount = 10;
+  if (gameState === 0) {
+    if (key === keys.A) {
+      action = "punch";
+    }
+    if (key === keys.Q) {
+      action = "kick";
+    }
+  }
+}
+
+/*
+ * Return a random integer N such that min <= N < max.
+ */
+function getRandomInteger(min, max) {
+  min = Math.ceil(min);
+  max = Math.floor(max);
+  return Math.floor((Math.random() * (max - min)) + min);
+}
+
+function update() {
+  if (gameState === 0) {
+    bloke.name = 'stand' + blokeDir;
+    if (action === "punch") {
+      bloke.name = 'punch' + blokeDir;
+    }
+    if (action === "kick") {
+      bloke.name = 'kick' + blokeDir;
+    }
+    if (actioncount <= 0) {
+      action = "";
+    }
+    if (keyboard[keys.LEFT]) {
+      moveBloke(3, "l");
+    }
+    else if (keyboard[keys.RIGHT]) {
+      moveBloke(-3, "r");
+    }
+    if (getRandomInteger(0, 101) === 0) {
+      makeDude();
+    }
+    updateDudes();
+  }
+  count += 1;
+  actioncount -= 1;
+}
+
+function moveBloke(x, d) {
+  let frame = Math.trunc((count % 48) / 8) + 1;
+  if (((backPos + x) < -3) && ((backPos + x) > -1197)) {
+    backPos += x;
+    moveDudes(x);
+    bloke.name = 'walk' + d + '_000' + frame;
+    blokeDir = d;
+  }
+}
+
+function makeDude() {
+  let d;
+  if (getRandomInteger(0, 2) === 0) {
+    d = new Actor('duder_0001');
+    d.center = [-50, 250];
+  }
+  else {
+    d = new Actor('dudel_0001');
+    d.center = [850, 250];
+  }
+  d.status = 0;
+  dudes.push(d);
+}
+
+function updateDudes() {
+  let frame = Math.trunc((count % 48) / 8) + 1;
+  for (let d of dudes) {
+    if (((bloke.name === ('punch' + blokeDir)) || (bloke.name === ('kick' + blokeDir))) &&
+        bloke.collidepoint(d.posx, d.posy)) {
+      d.status += 1;
+    }
+    if (d.posx <= 400) {
+      if (d.status > 10) {
+        d.name = 'dudefallr';
+        d.posy += 5;
+      }
+      else {
+        d.posx += 2;
+        d.name = 'duder_000' + frame;
+      }
+    }
+    if (d.posx > 400) {
+      if (d.status > 10) {
+        d.name = 'dudefalll';
+        d.posy += 5;
+      }
+      else {
+        d.posx -= 2;
+        d.name = 'dudel_000' + frame;
+      }
+    }
+    if ((d.posx > 398) && (d.posx < 402) && (d.status === 0)) {
+      gameState = 1;
+    }
+  }
+}
+
+function moveDudes(x) {
+  for (let d of dudes) {
+    d.posx += x;
+  }
+}
+
+window.addEventListener('load', (event) => {
+  images.LOAD('#imageLoader img');
+  reset();
+  screen.set_mode('#screen', '#reset', '#pause');
+});
+</script>
+</body>
+
+</html>
